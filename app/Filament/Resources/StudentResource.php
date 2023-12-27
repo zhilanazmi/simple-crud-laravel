@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\StudentResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -28,7 +29,7 @@ class StudentResource extends Resource
             ->schema([
                 Card::make()
                     ->schema([
-                        TextInput::make('nrp')->required(),
+                        TextInput::make('nrp')->required()->unique(ignorable:fn($record) => $record),
                         TextInput::make('nama')->required(),
                         Select::make('prodi')->options([
                             'IF' => 'Informatika',
@@ -44,13 +45,16 @@ class StudentResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('nrp')->searchable()->sortable(),
+                TextColumn::make('nama')->searchable()->sortable(),
+                TextColumn::make('prodi')->searchable()->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
